@@ -1,6 +1,6 @@
 #include <obs-module.h>
 #include <obs-nix-platform.h>
-#include <glad/glad.h>
+#include <glad/gles2.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xlib-xcb.h>

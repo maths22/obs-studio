@@ -67,6 +67,7 @@ static bool create_pixel_unpack_buffer(struct gs_texture_2d *tex)
 	}
 
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, size, 0, GL_DYNAMIC_DRAW);
+	tex->buffer_size = size;
 	if (!gl_success("glBufferData"))
 		success = false;
 
@@ -203,8 +204,8 @@ bool gs_texture_map(gs_texture_t *tex, uint8_t **ptr, uint32_t *linesize)
 	if (!gl_bind_buffer(GL_PIXEL_UNPACK_BUFFER, tex2d->unpack_buffer))
 		goto fail;
 
-	*ptr = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-	if (!gl_success("glMapBuffer"))
+	*ptr = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, tex2d->buffer_size, GL_MAP_WRITE_BIT);
+	if (!gl_success("glMapBufferRange"))
 		goto fail;
 
 	gl_bind_buffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -260,7 +261,8 @@ bool gs_texture_is_rect(const gs_texture_t *tex)
 	}
 
 	const struct gs_texture_2d *tex2d = (const struct gs_texture_2d *)tex;
-	return tex2d->base.gl_target == GL_TEXTURE_RECTANGLE;
+	return false;
+	// return tex2d->base.gl_target == GL_TEXTURE_RECTANGLE;
 }
 
 void *gs_texture_get_obj(gs_texture_t *tex)

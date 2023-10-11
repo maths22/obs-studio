@@ -26,7 +26,8 @@
 #include <gio/gunixfdlist.h>
 
 #include <fcntl.h>
-#include <glad/glad.h>
+#include <glad/gles2.h>
+#include <linux/dma-buf.h>
 #include <libdrm/drm_fourcc.h>
 #include <pipewire/pipewire.h>
 #include <spa/param/video/format-utils.h>

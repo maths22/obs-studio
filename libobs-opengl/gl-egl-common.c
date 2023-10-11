@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <glad/glad_egl.h>
+#include <glad/egl.h>
 
 #if defined(__linux__)
 
@@ -46,9 +46,9 @@ typedef unsigned long drm_handle_t;
 
 #endif
 
-typedef void(APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)(
-	GLenum target, GLeglImageOES image);
-static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC glEGLImageTargetTexture2DOES;
+// typedef void(APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)(
+// 	GLenum target, GLeglImageOES image);
+// static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC glEGLImageTargetTexture2DOES;
 
 static bool find_gl_extension(const char *extension)
 {

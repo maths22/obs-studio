@@ -22,7 +22,7 @@
 
 #include "gl-egl-common.h"
 
-#include <glad/glad_egl.h>
+#include <glad/egl.h>
 
 static const EGLint config_attribs_native[] = {EGL_SURFACE_TYPE,
 					       EGL_WINDOW_BIT,
@@ -125,8 +125,10 @@ static bool egl_make_current(EGLDisplay display, EGLSurface surface,
 		return false;
 	}
 
-	if (surface != EGL_NO_SURFACE)
-		glDrawBuffer(GL_BACK);
+	if (surface != EGL_NO_SURFACE) {
+		GLenum buffers[] = { GL_BACK };
+		glDrawBuffers(1, buffers);
+	}
 
 	return true;
 }
@@ -227,12 +229,12 @@ static struct gl_platform *gl_wayland_egl_platform_create(gs_device_t *device,
 		goto fail_context_create;
 	}
 
-	if (!gladLoadGL()) {
+	if (!gladLoaderLoadGLES2()) {
 		blog(LOG_ERROR, "Failed to load OpenGL entry functions.");
 		goto fail_load_gl;
 	}
 
-	if (!gladLoadEGL()) {
+	if (!gladLoaderLoadEGL(NULL)) {
 		blog(LOG_ERROR, "Unable to load EGL entry functions.");
 		goto fail_load_egl;
 	}

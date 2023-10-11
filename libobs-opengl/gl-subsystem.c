@@ -27,11 +27,11 @@
 #undef far
 #endif
 
-/* #define SHOW_ALL_GL_MESSAGES */
+#define SHOW_ALL_GL_MESSAGES
 
 #ifdef _DEBUG
 
-static void APIENTRY gl_debug_proc(GLenum source, GLenum type, GLuint id,
+static void GLAD_API_PTR gl_debug_proc(GLenum source, GLenum type, GLuint id,
 				   GLenum severity, GLsizei length,
 				   const GLchar *message, const GLvoid *data)
 {
@@ -43,29 +43,29 @@ static void APIENTRY gl_debug_proc(GLenum source, GLenum type, GLuint id,
 /* frames can get a bit too much spam with irrelevant/insignificant opengl
  * debug messages */
 #ifndef SHOW_ALL_GL_MESSAGES
-	if (type > GL_DEBUG_TYPE_PORTABILITY &&
-	    severity != GL_DEBUG_SEVERITY_HIGH) {
+	if (type > GL_DEBUG_TYPE_PORTABILITY_KHR &&
+	    severity != GL_DEBUG_SEVERITY_HIGH_KHR) {
 		return;
 	}
 #endif
 
 	switch (source) {
-	case GL_DEBUG_SOURCE_API:
+	case GL_DEBUG_SOURCE_API_KHR:
 		source_str = "API";
 		break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM_KHR:
 		source_str = "Window System";
 		break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER:
+	case GL_DEBUG_SOURCE_SHADER_COMPILER_KHR:
 		source_str = "Shader Compiler";
 		break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY:
+	case GL_DEBUG_SOURCE_THIRD_PARTY_KHR:
 		source_str = "Third Party";
 		break;
-	case GL_DEBUG_SOURCE_APPLICATION:
+	case GL_DEBUG_SOURCE_APPLICATION_KHR:
 		source_str = "Application";
 		break;
-	case GL_DEBUG_SOURCE_OTHER:
+	case GL_DEBUG_SOURCE_OTHER_KHR:
 		source_str = "Other";
 		break;
 	default:
@@ -73,22 +73,22 @@ static void APIENTRY gl_debug_proc(GLenum source, GLenum type, GLuint id,
 	}
 
 	switch (type) {
-	case GL_DEBUG_TYPE_ERROR:
+	case GL_DEBUG_TYPE_ERROR_KHR:
 		type_str = "Error";
 		break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR:
 		type_str = "Deprecated Behavior";
 		break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR:
 		type_str = "Undefined Behavior";
 		break;
-	case GL_DEBUG_TYPE_PORTABILITY:
+	case GL_DEBUG_TYPE_PORTABILITY_KHR:
 		type_str = "Portability";
 		break;
-	case GL_DEBUG_TYPE_PERFORMANCE:
+	case GL_DEBUG_TYPE_PERFORMANCE_KHR:
 		type_str = "Performance";
 		break;
-	case GL_DEBUG_TYPE_OTHER:
+	case GL_DEBUG_TYPE_OTHER_KHR:
 		type_str = "Other";
 		break;
 	default:
@@ -96,16 +96,16 @@ static void APIENTRY gl_debug_proc(GLenum source, GLenum type, GLuint id,
 	}
 
 	switch (severity) {
-	case GL_DEBUG_SEVERITY_HIGH:
+	case GL_DEBUG_SEVERITY_HIGH_KHR:
 		severity_str = "High";
 		break;
-	case GL_DEBUG_SEVERITY_MEDIUM:
+	case GL_DEBUG_SEVERITY_MEDIUM_KHR:
 		severity_str = "Medium";
 		break;
-	case GL_DEBUG_SEVERITY_LOW:
+	case GL_DEBUG_SEVERITY_LOW_KHR:
 		severity_str = "Low";
 		break;
-	case GL_DEBUG_SEVERITY_NOTIFICATION:
+	case GL_DEBUG_SEVERITY_NOTIFICATION_KHR:
 		severity_str = "Notification";
 		break;
 	default:
@@ -118,11 +118,14 @@ static void APIENTRY gl_debug_proc(GLenum source, GLenum type, GLuint id,
 
 static void gl_enable_debug()
 {
-	if (GLAD_GL_VERSION_4_3) {
-		glDebugMessageCallback(gl_debug_proc, NULL);
-		gl_enable(GL_DEBUG_OUTPUT);
-	} else if (GLAD_GL_ARB_debug_output) {
-		glDebugMessageCallbackARB(gl_debug_proc, NULL);
+	// if (GLAD_GL_VERSION_4_3) {
+	// 	glDebugMessageCallback(gl_debug_proc, NULL);
+	// 	gl_enable(GL_DEBUG_OUTPUT);
+	// } else if (GLAD_GL_ARB_debug_output) {
+	// 	glDebugMessageCallbackARB(gl_debug_proc, NULL);
+	// } else 
+	if(GLAD_GL_KHR_debug) {
+		glDebugMessageCallbackKHR(gl_debug_proc, NULL);		
 	} else {
 		blog(LOG_DEBUG, "Failed to set GL debug callback as it is "
 				"not supported.");
@@ -134,26 +137,35 @@ static void gl_enable_debug() {}
 
 static bool gl_init_extensions(struct gs_device *device)
 {
-	if (!GLAD_GL_VERSION_3_3) {
+	if (!GLAD_GL_ES_VERSION_3_1) {
 		blog(LOG_ERROR,
-		     "obs-studio requires OpenGL version 3.3 or higher.");
+		     "obs-studio requires OpenGL ES version 3.1 or higher.");
 		return false;
 	}
 
 	gl_enable_debug();
 
-	if (!GLAD_GL_EXT_texture_sRGB_decode) {
-		blog(LOG_ERROR, "OpenGL extension EXT_texture_sRGB_decode "
-				"is required.");
-		return false;
-	}
+// TODO what giant pile of extensions are needed
+	// if (!GLAD_GL_EXT_sRGB) {
+	// 	blog(LOG_ERROR, "OpenGL extension EXT_sRGB "
+	// 			"is required.");
+	// 	return false;
+	// }
+	// if (!GLAD_GL_EXT_texture_sRGB_decode) {
+	// 	blog(LOG_ERROR, "OpenGL extension EXT_texture_sRGB_decode "
+	// 			"is required.");
+	// 	return false;
+	// }
+	// if (!GLAD_GL_OES_mapbuffer) {
+	// 	blog(LOG_ERROR, "OpenGL extension OES_mapbuffer "
+	// 			"is required.");
+	// 	return false;
+	// }
 
-	gl_enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	// gl_enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	if (GLAD_GL_VERSION_4_3 || GLAD_GL_ARB_copy_image)
-		device->copy_type = COPY_TYPE_ARB;
-	else if (GLAD_GL_NV_copy_image)
-		device->copy_type = COPY_TYPE_NV;
+	if (GLAD_GL_EXT_copy_image)
+		device->copy_type = COPY_TYPE_EXT;
 	else
 		device->copy_type = COPY_TYPE_FBO_BLIT;
 
@@ -453,6 +465,9 @@ static inline void apply_swizzle(struct gs_texture *tex)
 		gl_tex_param_i(tex->gl_target, GL_TEXTURE_SWIZZLE_B, GL_ONE);
 		gl_tex_param_i(tex->gl_target, GL_TEXTURE_SWIZZLE_A, GL_RED);
 	}
+	if (tex->format == GS_BGRX) {
+		gl_tex_param_i(tex->gl_target, GL_TEXTURE_SWIZZLE_A, GL_ONE);
+	}
 }
 
 static bool load_texture_sampler(gs_texture_t *tex, gs_samplerstate_t *ss)
@@ -486,12 +501,14 @@ static bool load_texture_sampler(gs_texture_t *tex, gs_samplerstate_t *ss)
 		success = false;
 	if (!gl_tex_param_i(tex->gl_target, GL_TEXTURE_WRAP_R, ss->address_w))
 		success = false;
-	if (ss->address_u == GL_CLAMP_TO_BORDER ||
-	    ss->address_v == GL_CLAMP_TO_BORDER ||
-	    ss->address_w == GL_CLAMP_TO_BORDER) {
-		if (!gl_tex_param_fv(tex->gl_target, GL_TEXTURE_BORDER_COLOR,
-				     ss->border_color.ptr))
-			success = false;
+	if (GLAD_GL_EXT_texture_border_clamp) {
+		if (ss->address_u == GL_CLAMP_TO_BORDER_EXT ||
+				ss->address_v == GL_CLAMP_TO_BORDER_EXT ||
+				ss->address_w == GL_CLAMP_TO_BORDER_EXT) {
+			if (!gl_tex_param_fv(tex->gl_target, GL_TEXTURE_BORDER_COLOR_EXT,
+							ss->border_color.ptr))
+				success = false;
+		}
 	}
 	if (GLAD_GL_EXT_texture_filter_anisotropic) {
 		if (!gl_tex_param_i(tex->gl_target,
@@ -940,16 +957,16 @@ void device_enable_framebuffer_srgb(gs_device_t *device, bool enable)
 	UNUSED_PARAMETER(device);
 
 	if (enable)
-		gl_enable(GL_FRAMEBUFFER_SRGB);
+		gl_enable(GL_FRAMEBUFFER_SRGB_EXT);
 	else
-		gl_disable(GL_FRAMEBUFFER_SRGB);
+		gl_disable(GL_FRAMEBUFFER_SRGB_EXT);
 }
 
 bool device_framebuffer_srgb_enabled(gs_device_t *device)
 {
 	UNUSED_PARAMETER(device);
 
-	const GLboolean enabled = glIsEnabled(GL_FRAMEBUFFER_SRGB);
+	const GLboolean enabled = glIsEnabled(GL_FRAMEBUFFER_SRGB_EXT);
 	gl_success("glIsEnabled");
 	return enabled == GL_TRUE;
 }
@@ -1179,7 +1196,7 @@ void device_clear(gs_device_t *device, uint32_t clear_flags,
 	}
 
 	if (clear_flags & GS_CLEAR_DEPTH) {
-		glClearDepth(depth);
+		glClearDepthf(depth);
 		gl_flags |= GL_DEPTH_BUFFER_BIT;
 	}
 
@@ -1495,7 +1512,7 @@ void device_debug_marker_begin(gs_device_t *device, const char *markername,
 	UNUSED_PARAMETER(device);
 	UNUSED_PARAMETER(color);
 
-	glPushDebugGroupKHR(GL_DEBUG_SOURCE_APPLICATION, 0, -1, markername);
+	glPushDebugGroupKHR(GL_DEBUG_SOURCE_APPLICATION_KHR, 0, -1, markername);
 }
 
 void device_debug_marker_end(gs_device_t *device)
@@ -1574,27 +1591,35 @@ void gs_timer_destroy(gs_timer_t *timer)
 
 void gs_timer_begin(gs_timer_t *timer)
 {
-	glQueryCounter(timer->queries[0], GL_TIMESTAMP);
-	gl_success("glQueryCounter");
+	if(GLAD_GL_EXT_disjoint_timer_query) {
+		glQueryCounterEXT(timer->queries[0], GL_TIMESTAMP_EXT);
+		gl_success("glQueryCounterEXT");
+	}
 }
 
 void gs_timer_end(gs_timer_t *timer)
 {
-	glQueryCounter(timer->queries[1], GL_TIMESTAMP);
-	gl_success("glQueryCounter");
+	if(GLAD_GL_EXT_disjoint_timer_query) {
+		glQueryCounterEXT(timer->queries[1], GL_TIMESTAMP_EXT);
+		gl_success("glQueryCounterEXT");
+	}
 }
 
 bool gs_timer_get_data(gs_timer_t *timer, uint64_t *ticks)
 {
+	if(!GLAD_GL_EXT_disjoint_timer_query) {
+		return false;
+	}
+
 	GLint available = 0;
-	glGetQueryObjectiv(timer->queries[1], GL_QUERY_RESULT_AVAILABLE,
+	glGetQueryObjectivEXT(timer->queries[1], GL_QUERY_RESULT_AVAILABLE,
 			   &available);
 
 	GLuint64 begin, end;
-	glGetQueryObjectui64v(timer->queries[0], GL_QUERY_RESULT, &begin);
-	gl_success("glGetQueryObjectui64v");
-	glGetQueryObjectui64v(timer->queries[1], GL_QUERY_RESULT, &end);
-	gl_success("glGetQueryObjectui64v");
+	glGetQueryObjectui64vEXT(timer->queries[0], GL_QUERY_RESULT, &begin);
+	gl_success("glGetQueryObjectui64vEXT");
+	glGetQueryObjectui64vEXT(timer->queries[1], GL_QUERY_RESULT, &end);
+	gl_success("glGetQueryObjectui64vEXT");
 
 	*ticks = end - begin;
 	return true;

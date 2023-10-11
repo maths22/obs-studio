@@ -23,14 +23,14 @@
 #include <graphics/device-exports.h>
 #include <graphics/matrix4.h>
 
-#include <glad/glad.h>
+#include <glad/gles2.h>
 
 #include "gl-helpers.h"
 
 struct gl_platform;
 struct gl_windowinfo;
 
-enum copy_type { COPY_TYPE_ARB, COPY_TYPE_NV, COPY_TYPE_FBO_BLIT };
+enum copy_type { COPY_TYPE_EXT, COPY_TYPE_FBO_BLIT };
 
 static inline GLenum convert_gs_format(enum gs_color_format format)
 {
@@ -42,9 +42,9 @@ static inline GLenum convert_gs_format(enum gs_color_format format)
 	case GS_RGBA:
 		return GL_RGBA;
 	case GS_BGRX:
-		return GL_BGRA;
+		return GL_BGRA_EXT;
 	case GS_BGRA:
-		return GL_BGRA;
+		return GL_BGRA_EXT;
 	case GS_R10G10B10A2:
 		return GL_RGBA;
 	case GS_RGBA16:
@@ -74,9 +74,9 @@ static inline GLenum convert_gs_format(enum gs_color_format format)
 	case GS_RGBA_UNORM:
 		return GL_RGBA;
 	case GS_BGRX_UNORM:
-		return GL_BGRA;
+		return GL_BGRA_EXT;
 	case GS_BGRA_UNORM:
-		return GL_BGRA;
+		return GL_BGRA_EXT;
 	case GS_RG16:
 		return GL_RG;
 	case GS_UNKNOWN:
@@ -96,15 +96,15 @@ static inline GLenum convert_gs_internal_format(enum gs_color_format format)
 	case GS_RGBA:
 		return GL_SRGB8_ALPHA8;
 	case GS_BGRX:
-		return GL_SRGB8;
+		return GL_SRGB8_ALPHA8;
 	case GS_BGRA:
 		return GL_SRGB8_ALPHA8;
 	case GS_R10G10B10A2:
 		return GL_RGB10_A2;
 	case GS_RGBA16:
-		return GL_RGBA16;
+		return GL_RGBA16I;
 	case GS_R16:
-		return GL_R16;
+		return GL_R16I;
 	case GS_RGBA16F:
 		return GL_RGBA16F;
 	case GS_RGBA32F:
@@ -132,7 +132,7 @@ static inline GLenum convert_gs_internal_format(enum gs_color_format format)
 	case GS_BGRA_UNORM:
 		return GL_RGBA;
 	case GS_RG16:
-		return GL_RG16;
+		return GL_RG16I;
 	case GS_UNKNOWN:
 		return 0;
 	}
@@ -386,9 +386,9 @@ static inline GLint convert_address_mode(enum gs_address_mode mode)
 	case GS_ADDRESS_MIRROR:
 		return GL_MIRRORED_REPEAT;
 	case GS_ADDRESS_BORDER:
-		return GL_CLAMP_TO_BORDER;
+		return GL_CLAMP_TO_BORDER_EXT;
 	case GS_ADDRESS_MIRRORONCE:
-		return GL_MIRROR_CLAMP_EXT;
+		return GL_MIRROR_CLAMP_TO_EDGE_EXT;
 	}
 
 	return GL_REPEAT;
@@ -569,6 +569,7 @@ struct gs_texture_2d {
 	uint32_t height;
 	bool gen_mipmaps;
 	GLuint unpack_buffer;
+	size_t buffer_size;
 };
 
 struct gs_texture_3d {
@@ -599,6 +600,7 @@ struct gs_stage_surface {
 	GLint gl_internal_format;
 	GLenum gl_type;
 	GLuint pack_buffer;
+	size_t buffer_size;
 };
 
 struct gs_zstencil_buffer {

@@ -44,11 +44,11 @@ static const char *gl_error_to_str(GLenum errorcode)
 			"GL_OUT_OF_MEMORY",
 		},
 		{
-			GL_STACK_UNDERFLOW,
+			GL_STACK_UNDERFLOW_KHR,
 			"GL_STACK_UNDERFLOW",
 		},
 		{
-			GL_STACK_OVERFLOW,
+			GL_STACK_OVERFLOW_KHR,
 			"GL_STACK_OVERFLOW",
 		},
 	};

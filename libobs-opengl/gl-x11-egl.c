@@ -32,22 +32,20 @@
 #include "gl-egl-common.h"
 #include "gl-x11-egl.h"
 
-#include <glad/glad_egl.h>
+#include <glad/egl.h>
 
-typedef EGLDisplay(EGLAPIENTRYP PFNEGLGETPLATFORMDISPLAYEXTPROC)(
-	EGLenum platform, void *native_display, const EGLint *attrib_list);
+// typedef EGLDisplay(EGLAPIENTRYP PFNEGLGETPLATFORMDISPLAYEXTPROC)(
+// 	EGLenum platform, void *native_display, const EGLint *attrib_list);
 
 static const int ctx_attribs[] = {
 #ifdef _DEBUG
-	EGL_CONTEXT_OPENGL_DEBUG,
-	EGL_TRUE,
+	EGL_CONTEXT_FLAGS_KHR,
+	EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
 #endif
-	EGL_CONTEXT_OPENGL_PROFILE_MASK,
-	EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
 	EGL_CONTEXT_MAJOR_VERSION,
 	3,
 	EGL_CONTEXT_MINOR_VERSION,
-	3,
+	1,
 	EGL_NONE,
 };
 
@@ -177,8 +175,6 @@ static bool gl_context_create(struct gl_platform *plat)
 	int egl_min = 0, egl_maj = 0;
 	bool success = false;
 
-	eglBindAPI(EGL_OPENGL_API);
-
 	edisplay = get_egl_display(plat);
 
 	if (EGL_NO_DISPLAY == edisplay) {
@@ -192,6 +188,10 @@ static bool gl_context_create(struct gl_platform *plat)
 		     get_egl_error_string());
 		return false;
 	}
+
+	gladLoaderLoadEGL(edisplay);
+
+	eglBindAPI(EGL_OPENGL_ES_API);
 
 	if (!eglChooseConfig(edisplay, ctx_config_attribs, &config, 1,
 			     &frame_buf_config_count)) {
@@ -295,11 +295,10 @@ static Display *open_windowless_display(bool *should_close)
 		goto error;
 	}
 
-	if (!gladLoadEGL()) {
+	if (!gladLoaderLoadEGL(NULL)) {
 		blog(LOG_ERROR, "Unable to load EGL entry functions.");
 		goto error;
 	}
-
 	return display;
 
 error:
@@ -357,7 +356,7 @@ static struct gl_platform *gl_x11_egl_platform_create(gs_device_t *device,
 		goto fail_make_current;
 	}
 
-	if (!gladLoadGL()) {
+	if (!gladLoaderLoadGLES2()) {
 		blog(LOG_ERROR, "Failed to load OpenGL entry functions.");
 		goto fail_load_gl;
 	}

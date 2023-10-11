@@ -2,7 +2,7 @@
 
 #include "gl-nix.h"
 
-#include <glad/glad_egl.h>
+#include <glad/egl.h>
 
 const char *gl_egl_error_to_string(EGLint error_number);
 
