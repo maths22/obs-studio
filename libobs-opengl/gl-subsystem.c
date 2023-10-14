@@ -137,9 +137,9 @@ static void gl_enable_debug() {}
 
 static bool gl_init_extensions(struct gs_device *device)
 {
-	if (!GLAD_GL_ES_VERSION_3_1) {
+	if (!GLAD_GL_ES_VERSION_3_0) {
 		blog(LOG_ERROR,
-		     "obs-studio requires OpenGL ES version 3.1 or higher.");
+		     "obs-studio requires OpenGL ES version 3.0 or higher.");
 		return false;
 	}
 

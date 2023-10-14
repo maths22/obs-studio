@@ -779,8 +779,8 @@ static bool gl_shader_buildstring(struct gl_shader_parser *glsp)
 	}
 
 	// dstr_copy(&glsp->gl_string, "#version 330\n\n");
-	dstr_copy(&glsp->gl_string, "#version 310 es\n");
-	dstr_cat(&glsp->gl_string, "#extension GL_OES_shader_io_blocks : enable\n\n");
+	dstr_copy(&glsp->gl_string, "#version 300 es\n");
+//	dstr_cat(&glsp->gl_string, "#extension GL_OES_shader_io_blocks : enable\n\n");
 	dstr_cat(&glsp->gl_string, "precision mediump float;\n");
 	dstr_cat(&glsp->gl_string, "precision mediump sampler3D;\n\n");
 	dstr_cat(&glsp->gl_string, "const bool obs_glsl_compile = true;\n\n");
@@ -807,7 +807,7 @@ static bool gl_shader_buildstring(struct gl_shader_parser *glsp)
 	gl_write_params(glsp);
 	gl_write_inputs(glsp, main_func);
 	gl_write_outputs(glsp, main_func);
-	gl_write_interface_block(glsp);
+//	gl_write_interface_block(glsp);
 	gl_write_structs(glsp);
 	gl_write_functions(glsp);
 	gl_write_main(glsp, main_func);

@@ -260,7 +260,7 @@ bool gs_texture_is_rect(const gs_texture_t *tex)
 		return false;
 	}
 
-	const struct gs_texture_2d *tex2d = (const struct gs_texture_2d *)tex;
+	// const struct gs_texture_2d *tex2d = (const struct gs_texture_2d *)tex;
 	return false;
 	// return tex2d->base.gl_target == GL_TEXTURE_RECTANGLE;
 }

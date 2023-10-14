@@ -36,11 +36,16 @@ elseif(OS_MACOS)
   find_library(COCOA Cocoa)
   find_library(IOSURF IOSurface)
 
+  # Define path to ANGLE libraries
+  set(ANGLE_LIBRARY_DIR vendor/angle/out/Release CACHE FILEPATH "Path to ANGLE libraries")
+  find_library(ANGLE_GLESv2_LIBRARY libGLESv2.dylib PATHS ${ANGLE_LIBRARY_DIR} REQUIRED)
+  find_library(ANGLE_EGL_LIBRARY libEGL.dylib PATHS ${ANGLE_LIBRARY_DIR} REQUIRED)
+
   target_sources(libobs-opengl PRIVATE gl-cocoa.m)
   target_compile_definitions(libobs-opengl PRIVATE GL_SILENCE_DEPRECATION)
   target_compile_options(libobs-opengl PRIVATE -Wno-strict-prototypes)
 
-  target_link_libraries(libobs-opengl PRIVATE ${COCOA} ${IOSURF})
+  target_link_libraries(libobs-opengl PRIVATE ${COCOA} ${IOSURF} ${ANGLE_EGL_LIBRARY} ${ANGLE_GLESv2_LIBRARY})
 elseif(OS_LINUX OR OS_FREEBSD)
   find_package(X11 REQUIRED)
   find_package(
