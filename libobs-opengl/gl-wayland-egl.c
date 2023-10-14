@@ -56,15 +56,13 @@ static const EGLint config_attribs[] = {EGL_SURFACE_TYPE,
 
 static const EGLint ctx_attribs[] = {
 #ifdef _DEBUG
-	EGL_CONTEXT_OPENGL_DEBUG,
-	EGL_TRUE,
+	EGL_CONTEXT_FLAGS_KHR,
+	EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
 #endif
-	EGL_CONTEXT_OPENGL_PROFILE_MASK,
-	EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
 	EGL_CONTEXT_MAJOR_VERSION,
 	3,
 	EGL_CONTEXT_MINOR_VERSION,
-	3,
+	0,
 	EGL_NONE};
 
 static const EGLint khr_ctx_attribs[] = {
@@ -72,12 +70,10 @@ static const EGLint khr_ctx_attribs[] = {
 	EGL_CONTEXT_FLAGS_KHR,
 	EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
 #endif
-	EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,
-	EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
 	EGL_CONTEXT_MAJOR_VERSION_KHR,
 	3,
 	EGL_CONTEXT_MINOR_VERSION_KHR,
-	3,
+	0,
 	EGL_NONE};
 
 struct gl_windowinfo {
@@ -116,7 +112,7 @@ static void gl_wayland_egl_windowinfo_destroy(struct gl_windowinfo *info)
 static bool egl_make_current(EGLDisplay display, EGLSurface surface,
 			     EGLContext context)
 {
-	if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
+	if (eglBindAPI(EGL_OPENGL_ES_API) == EGL_FALSE) {
 		blog(LOG_ERROR, "eglBindAPI failed");
 	}
 
@@ -138,7 +134,9 @@ static bool egl_context_create(struct gl_platform *plat, const EGLint *attribs)
 	bool success = false;
 	EGLint num_config;
 
-	if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
+	gladLoaderLoadEGL(plat->display);
+
+	if (eglBindAPI(EGL_OPENGL_ES_API) == EGL_FALSE) {
 		blog(LOG_ERROR, "eglBindAPI failed");
 	}
 
@@ -190,6 +188,11 @@ static struct gl_platform *gl_wayland_egl_platform_create(gs_device_t *device,
 
 	plat->wl_display = obs_get_nix_platform_display();
 
+	if (!gladLoaderLoadEGL(NULL)) {
+		blog(LOG_ERROR, "Unable to load EGL entry functions.");
+		goto fail_load_egl;
+	}
+
 	device->plat = plat;
 
 	plat->display = eglGetDisplay(plat->wl_display);
@@ -234,18 +237,13 @@ static struct gl_platform *gl_wayland_egl_platform_create(gs_device_t *device,
 		goto fail_load_gl;
 	}
 
-	if (!gladLoaderLoadEGL(NULL)) {
-		blog(LOG_ERROR, "Unable to load EGL entry functions.");
-		goto fail_load_egl;
-	}
-
 	goto success;
 
-fail_load_egl:
 fail_load_gl:
 	egl_context_destroy(plat);
 fail_context_create:
 	eglTerminate(plat->display);
+fail_load_egl:
 fail_display_init:
 	bfree(plat);
 	plat = NULL;
