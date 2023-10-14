@@ -790,7 +790,7 @@ static bool gl_shader_buildstring(struct gl_shader_parser *glsp)
 	dstr_cat(&glsp->gl_string, "\tint lod = p_lod.z;\n");
 	dstr_cat(&glsp->gl_string, "\tivec2 size = textureSize(s, lod);\n");
 	dstr_cat(&glsp->gl_string,
-		 "\tvec2 p = (vec2(p_lod.xy) + 0.5) / float(size);\n");
+		 "\tvec2 p = (vec2(p_lod.xy) + 0.5) / vec2(size);\n");
 	dstr_cat(&glsp->gl_string, "\tvec4 color = textureLod(s, p, float(lod));\n");
 	dstr_cat(&glsp->gl_string, "\treturn color;\n");
 	dstr_cat(&glsp->gl_string, "}\n\n");
@@ -800,7 +800,7 @@ static bool gl_shader_buildstring(struct gl_shader_parser *glsp)
 	dstr_cat(&glsp->gl_string, "\tint lod = p_lod.w;\n");
 	dstr_cat(&glsp->gl_string, "\tivec3 size = textureSize(s, lod);\n");
 	dstr_cat(&glsp->gl_string,
-		 "\tvec3 p = (vec3(p_lod.xyz) + 0.5) / float(size);\n");
+		 "\tvec3 p = (vec3(p_lod.xyz) + 0.5) / vec3(size);\n");
 	dstr_cat(&glsp->gl_string, "\tvec4 color = textureLod(s, p, float(lod));\n");
 	dstr_cat(&glsp->gl_string, "\treturn color;\n");
 	dstr_cat(&glsp->gl_string, "}\n\n");

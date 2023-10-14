@@ -10,6 +10,7 @@ if(OBS_CMAKE_VERSION VERSION_LESS 3.0.0)
 endif()
 #target_sources(glad PRIVATE src/glad.c include/glad/glad.h)
 target_sources(obsglad PRIVATE src/glad_gles2.c include/glad/gles2.h)
+target_sources(obsglad PRIVATE src/glad_egl.c include/EGL/eglplatform.h include/glad/egl.h)
 
 target_include_directories(obsglad PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
@@ -24,10 +25,8 @@ if(OS_WINDOWS)
   target_sources(obsglad PRIVATE src/glad_wgl.c include/glad/glad_wgl.h)
 elseif(OS_MACOS)
   target_compile_options(obsglad PRIVATE -Wno-strict-prototypes)
-  target_sources(obsglad PRIVATE src/glad_egl.c include/EGL/eglplatform.h include/glad/egl.h)
 elseif(OS_LINUX OR OS_FREEBSD)
   if(TARGET OpenGL::EGL)
-    target_sources(obsglad PRIVATE src/glad_egl.c include/EGL/eglplatform.h include/glad/egl.h)
 
     target_link_libraries(obsglad PRIVATE OpenGL::EGL)
   endif()

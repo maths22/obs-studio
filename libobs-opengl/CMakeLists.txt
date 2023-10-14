@@ -31,7 +31,13 @@ target_link_libraries(libobs-opengl PRIVATE OBS::libobs OBS::glad)
 if(OS_WINDOWS)
   configure_file(cmake/windows/obs-module.rc.in libobs-opengl.rc)
 
+  # Define path to ANGLE libraries
+  set(ANGLE_LIBRARY_DIR vendor/angle/out/Release CACHE FILEPATH "Path to ANGLE libraries")
+  find_library(ANGLE_GLESv2_LIBRARY libGLESv2.dll PATHS ${ANGLE_LIBRARY_DIR} REQUIRED)
+  find_library(ANGLE_EGL_LIBRARY libEGL.dll PATHS ${ANGLE_LIBRARY_DIR} REQUIRED)
+
   target_sources(libobs-opengl PRIVATE gl-windows.c libobs-opengl.rc)
+  target_link_libraries(libobs-opengl PRIVATE ${ANGLE_EGL_LIBRARY} ${ANGLE_GLESv2_LIBRARY})
 elseif(OS_MACOS)
   find_library(COCOA Cocoa)
   find_library(IOSURF IOSurface)

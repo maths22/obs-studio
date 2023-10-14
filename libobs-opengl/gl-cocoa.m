@@ -226,7 +226,7 @@ static void gl_context_destroy(struct gl_platform *plat)
     eglDestroyContext(plat->edisplay, plat->context);
 }
 
-struct gl_platform *gl_platform_create(gs_device_t *device __unused, uint32_t adapter __unused)
+struct gl_platform *gl_platform_create(gs_device_t *device, uint32_t adapter __unused)
 {
     struct gl_platform *plat = bmalloc(sizeof(struct gl_platform));
 
@@ -235,7 +235,8 @@ struct gl_platform *gl_platform_create(gs_device_t *device __unused, uint32_t ad
 	    goto fail_load_gl;
     }
 
-    device->plat = plat;if (!gl_context_create(plat)) {
+    device->plat = plat;
+    if (!gl_context_create(plat)) {
             blog(LOG_ERROR, "Failed to create context!");
             goto fail_context_create;
     }
@@ -430,16 +431,12 @@ void device_present(gs_device_t *device)
 {
     struct gl_platform *plat = device->plat;
     struct gl_windowinfo *wi = device->cur_swap->wi;
-//    eglMakeCurrent(plat->edisplay, wi->surface, wi->surface,
-//		   device->plat->context);
     if (eglSwapInterval(plat->edisplay, 0) == EGL_FALSE) {
 	blog(LOG_ERROR, "eglSwapInterval failed");
     }
     if (eglSwapBuffers(plat->edisplay, wi->surface) == EGL_FALSE) {
 	blog(LOG_ERROR, "eglSwapBuffers failed (%s)", get_egl_error_string());
     }
-//    eglMakeCurrent(plat->edisplay, EGL_NO_SURFACE, EGL_NO_SURFACE,
-//		   EGL_NO_CONTEXT);
 }
 
 bool device_is_monitor_hdr(gs_device_t *device __unused, void *monitor __unused)
